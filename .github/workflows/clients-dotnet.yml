@@ -19,19 +19,27 @@ jobs:
 
       - name: Build dotnet
         working-directory: src/clients/dotnet
-        run: dotnet build -c Release
+        run: dotnet build --configuration Release
 
       - name: Tests
         working-directory: src/clients/dotnet
-        run: dotnet test /p:CollectCoverage=true /p:Threshold=\"95,85,95\" /p:ThresholdType=\"line,branch,method\"
-
+        run: |
+          dotnet test \
+          /p:CollectCoverage=true \
+          /p:Threshold=\"95,85,95\" \
+          /p:ThresholdType=\"line,branch,method\"
       - name: Pack
         working-directory: src/clients/dotnet
-        run: dotnet pack -c Release
+        run: |
+          dotnet pack TigerBeetle \
+          --configuration Release \
+          /p:AssemblyVersion=$BASE_VERSION.$(git rev-list --count HEAD) \
+          /p:Version=$BASE_VERSION.$(git rev-list --count HEAD)
+        env:
+          BASE_VERSION: 0.0.1
 
       - name: Save nuget package
         uses: actions/upload-artifact@v3
-        ## if: ${{ github.ref != 'refs/heads/main' }}
         with:
           name: nuget-artifact
           path: src/clients/dotnet/TigerBeetle/bin/Release/*.nupkg
@@ -121,3 +129,20 @@ jobs:
           cp -f /Program.cs .
           dotnet run
           "
+
+  publish:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: [run_validation_tests, run_validation_tests_on_containers]
+    name: Publish NuGet package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: nuget-artifact
+          path: ./nuget
+      - run: |
+          dotnet nuget push ./nuget/*.nupkg \
+          --api-key $NUGET_KEY \
+          --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_KEY: ${{ secrets.NUGET_KEY }}
