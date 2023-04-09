@@ -1,4 +1,4 @@
-## attempt 2
+## attempt 3
 name: "clients/dotnet"
 
 on:
@@ -88,7 +88,7 @@ jobs:
           mkdir test-project && cd test-project
           dotnet nuget add source ../nuget
           dotnet new console
-          dotnet add package tigerbeetle-dotnet -s ../nuget
+          dotnet add package tigerbeetle -s ../nuget
       - uses: actions/download-artifact@v3
         with:
           name: test-project-artifact
@@ -126,7 +126,7 @@ jobs:
           mkdir test-project && cd test-project
           dotnet nuget add source /nuget
           dotnet new console
-          dotnet add package tigerbeetle-dotnet -s /nuget
+          dotnet add package tigerbeetle -s /nuget
           cp -f /Program.cs .
           dotnet run
           "
