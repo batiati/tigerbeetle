@@ -1,8 +1,11 @@
-## attempt 3
+## attempt 4
 name: "clients/dotnet"
 
 on:
   workflow_call:
+    secrets:
+      NUGET_KEY:
+        required: true
 
 jobs:
   build:

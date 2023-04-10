@@ -19,6 +19,8 @@ on:
 jobs:
   client-dotnet:
     uses: ./.github/workflows/clients-dotnet.yml
+    secrets:
+      NUGET_KEY: ${{ secrets.NUGET_KEY }}    
   full-pipeline:
     needs:
       - client-dotnet
