@@ -140,6 +140,7 @@ jobs:
     name: Publish NuGet package
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-dotnet@v3
       - uses: actions/download-artifact@v3
         with:
           name: nuget-artifact
